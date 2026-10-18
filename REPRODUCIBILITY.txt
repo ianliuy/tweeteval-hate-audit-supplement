@@ -1,0 +1,73 @@
+Supplement S1
+Exact Text Overlap and Label Disagreement in TweetEval Hate
+Revision of 17 October 2026
+
+START HERE
+1. Install Python 3 and NumPy in your own environment.
+2. Run: python verify_supplement.py
+   This verifies SHA-256 file identities and independently recomputes all 66 overlap
+   counts, every control's matching-row removal, all reported point summaries and
+   conditional interval endpoints from the retained bootstrap draws. It does not train.
+3. Run: python recalculate_metrics.py
+   This writes all 32,284 model/condition/subset metric rows from saved predictions.
+4. To retrieve exact released text for further inspection, run:
+   python fetch_pinned_release.py --destination ./pinned-release
+   This retrieves 74 files from the immutable upstream commit: 66 split text/label
+   files, seven label mappings and the release README. It checks every byte against
+   provenance/pinned-release-manifest.json.
+   It requires internet access; no uploads occur. No dataset download is needed for
+   steps 2 and 3. Raw tweets are not redistributed in this package.
+
+TABLE MAP
+tables/table-S1-all-11.md is the compact all-11-configuration train-to-test table;
+tables/table-S1-all-11.csv supplies unrounded counts. Rows, distinct shared keys,
+matching source/training rows and agreeing/conflicting/ambiguous rows are distinct.
+Raw means line terminators removed only. Trimmed additionally strips boundary
+whitespace. Emoji's eight trimmed train-to-test ambiguous rows are separate from
+its one raw validation-to-test ambiguous row. Only hate was retrained.
+tables/all-split-overlap-audit.csv contains all 66 comparisons. Extended tables A1-A11
+in tables/extended-tables.md retain the other detailed diagnostics.
+
+CONTROL SETS AND POINT METRICS
+methods/deletions_raw.json and deletions_trimmed.json give zero-based removed training
+indices; retained indices are their complements. The same raw 1,000 controls
+(seeds 41001-42000) are used by all three sparse models. Encoder probes use the
+first 20 raw controls only. Trimmed Word LR uses its own 1,000 deletion lists.
+tables/control-overlap-removals.csv and control-overlap-summary.csv distinguish these
+sets. Raw 1,000: mean 13.399 matching training rows, range 4-24; encoder 20: 14.30,
+9-22; trimmed 1,000: 13.684, 5-27. These are rows removed, not affected test rows.
+There are 4,052 saved model-condition predictions: four sparse configurations
+with 1,002 conditions each and two encoders with 22 each. No model was retrained
+for this revision. All predictions retain official test-row order.
+
+UNCERTAINTY AND COMMON MASKS
+tables/control_summary.csv and neural_summary.csv give original/purge scores and
+control means, SDs, Monte Carlo errors and ranges; per-condition tables retain the
+inputs to these summaries. Bootstrap/*.npz contains the 5,000 saved draws behind
+uncertainty.csv and neural_uncertainty.csv. Source analysis scripts are retained
+for provenance, not advertised as a self-contained training installation.
+The paired intervals condition on fitted models and realized controls; they exclude
+training and annotation uncertainty. They resample equal-text keys together and
+describe the empirical test-key distribution. The 20-control encoder widths cannot
+be read as directly comparable estimates of general model stability. Control SDs
+and ranges describe variation across the specified deletion lists, not these intervals.
+subsets/ contains the common zero-based test-row masks used across sparse models.
+evaluation_subsets.csv records row counts, class composition and text-key counts.
+representation-per-test-row.csv and representation_summary.csv distinguish
+raw equality from retained feature-count equivalence and TF-IDF similarity.
+
+AUDIT INPUTS AND RELEASE IDENTITY
+audit-inputs/*.npz retains row-ordered SHA-256 text keys, labels and original lexical
+cluster indices for every configuration, split and raw/trimmed rule. This permits
+the counting and deletion checks without tweet text. Key hashes are linkage
+identifiers, not a privacy guarantee. Complete label sets are preserved per key.
+The immutable upstream release and exact source-file hashes are in provenance/.
+Pinned release: https://github.com/cardiffnlp/tweeteval/tree/4fbd22cd78421f05b1ecdb4fc5725bc7a7bd8f66
+Retraining settings, checkpoints, package versions and pooling are in methods/.
+
+INTERPRETATION
+These are retrospective, conditional diagnostics on one release. Random controls
+partly remove matching text; class-count matching is not causal identification.
+Subgroups and similarity-filtered populations are not independent datasets and
+are not certified free of semantic duplication. Released equality does not
+establish identical original tweets, people or incorrect annotations.
